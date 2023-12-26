@@ -5,16 +5,15 @@ import {
   RateLimitOptionsFactory,
   RateLimitOptionsInterface,
 } from './rate-limit.options.interface';
-import { RATE_LIMIT_OPTIONS } from './rate-limit.constants';
 
 @Module({
   providers: [
     {
-      provide: RATE_LIMIT_OPTIONS,
+      provide: 'RATE_LIMIT_OPTIONS',
       useValue: defaultRateLimitOptions,
     },
   ],
-  exports: [RATE_LIMIT_OPTIONS],
+  exports: ['RATE_LIMIT_OPTIONS'],
 })
 export class RateLimitModule {
   static register(
@@ -24,7 +23,7 @@ export class RateLimitModule {
       module: RateLimitModule,
       providers: [
         {
-          provide: RATE_LIMIT_OPTIONS,
+          provide: 'RATE_LIMIT_OPTIONS',
           useValue: options,
         },
       ],
@@ -60,14 +59,14 @@ export class RateLimitModule {
   ): Provider {
     if (options.useFactory) {
       return {
-        provide: RATE_LIMIT_OPTIONS,
+        provide: 'RATE_LIMIT_OPTIONS',
         useFactory: options.useFactory,
         inject: options.inject || [],
       };
     }
 
     return {
-      provide: RATE_LIMIT_OPTIONS,
+      provide: 'RATE_LIMIT_OPTIONS',
       useFactory: async (optionsFactory: RateLimitOptionsFactory) =>
         optionsFactory.createRateLimitOptions(),
       inject: [options.useExisting || options.useClass],

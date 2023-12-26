@@ -1,2 +1,1 @@
 export const RATE_LIMIT_SKIP = 'RATE_LIMIT:SKIP';
-export const RATE_LIMIT_OPTIONS = 'RATE_LIMIT_OPTIONS';
