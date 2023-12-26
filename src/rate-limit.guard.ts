@@ -139,7 +139,7 @@ export class RateLimitGuard implements CanActivate {
     if (this.options.for === 'ExpressGraphql') {
       return {
         req: context.getArgByIndex(2).req,
-        res: context.getArgByIndex(2).res,
+        res: context.getArgByIndex(2).req.res,
       };
     } else if (this.options.for === 'FastifyGraphql') {
       return {
