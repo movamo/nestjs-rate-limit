@@ -5,34 +5,41 @@ import {
   RateLimitOptionsFactory,
   RateLimitOptionsInterface,
 } from './rate-limit.options.interface';
+import { RATE_LIMIT_OPTIONS } from './rate-limit.constants';
 
 @Module({
   providers: [
     {
-      provide: 'RATE_LIMIT_OPTIONS',
+      provide: RATE_LIMIT_OPTIONS,
       useValue: defaultRateLimitOptions,
     },
   ],
-  exports: ['RATE_LIMIT_OPTIONS'],
+  exports: [RATE_LIMIT_OPTIONS],
 })
 export class RateLimitModule {
   static register(
     options: RateLimitOptionsInterface = defaultRateLimitOptions,
+    global = false,
   ): DynamicModule {
     return {
       module: RateLimitModule,
+      global,
       providers: [
         {
-          provide: 'RATE_LIMIT_OPTIONS',
+          provide: RATE_LIMIT_OPTIONS,
           useValue: options,
         },
       ],
     };
   }
 
-  static registerAsync(options: RateLimitAsyncOptionsInterface): DynamicModule {
+  static registerAsync(
+    options: RateLimitAsyncOptionsInterface,
+    global = false,
+  ): DynamicModule {
     return {
       module: RateLimitModule,
+      global,
       imports: options.imports,
       providers: [],
     };
@@ -59,14 +66,14 @@ export class RateLimitModule {
   ): Provider {
     if (options.useFactory) {
       return {
-        provide: 'RATE_LIMIT_OPTIONS',
+        provide: RATE_LIMIT_OPTIONS,
         useFactory: options.useFactory,
         inject: options.inject || [],
       };
     }
 
     return {
-      provide: 'RATE_LIMIT_OPTIONS',
+      provide: RATE_LIMIT_OPTIONS,
       useFactory: async (optionsFactory: RateLimitOptionsFactory) =>
         optionsFactory.createRateLimitOptions(),
       inject: [options.useExisting || options.useClass],

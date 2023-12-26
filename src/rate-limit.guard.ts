@@ -14,7 +14,7 @@ import {
   RLWrapperBlackAndWhite,
 } from 'rate-limiter-flexible';
 import { RateLimitOptionsInterface } from './rate-limit.options.interface';
-import { RATE_LIMIT_SKIP } from './rate-limit.constants';
+import { RATE_LIMIT_OPTIONS, RATE_LIMIT_SKIP } from './rate-limit.constants';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { defaultRateLimitOptions } from './rate-limit.options';
@@ -25,7 +25,7 @@ export class RateLimitGuard implements CanActivate {
   private routeLevelOptions: RateLimitOptionsInterface;
 
   constructor(
-    @Inject('RATE_LIMIT_OPTIONS') private options: RateLimitOptionsInterface,
+    @Inject(RATE_LIMIT_OPTIONS) private options: RateLimitOptionsInterface,
     @Inject('Reflector') private readonly reflector: Reflector,
   ) {}
 
