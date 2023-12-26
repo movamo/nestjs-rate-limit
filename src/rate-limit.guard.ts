@@ -25,7 +25,7 @@ export class RateLimitGuard implements CanActivate {
   private routeLevelOptions: RateLimitOptionsInterface;
 
   constructor(
-    @Inject(RATE_LIMIT_OPTIONS) private options: RateLimitOptionsInterface,
+    @Inject('RATE_LIMIT_OPTIONS') private options: RateLimitOptionsInterface,
     @Inject('Reflector') private readonly reflector: Reflector,
   ) {}
 
