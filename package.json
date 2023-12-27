@@ -1,6 +1,6 @@
 {
   "name": "@mvmdev/nestjs-rate-limit",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Flexible rate limiter for Nest.Js",
   "author": "Apostolos Papazisis <ap@movamo.de>",
   "private": false,
