@@ -214,7 +214,7 @@ In this option, you specify what the technology is running under the Nest applic
   <code> Type: 'Memory'</code>
   <br>
 
-Here you define where the limiter data will be stored. Each option plays a different role in limiter performance, to see that please check [benchmarks](https://github.com/ozkanonur/nestjs-rate-limiter#benchmarks).
+Here you define where the limiter data will be stored. Each option plays a different role in limiter performance, to see that please check [benchmarks](https://github.com/movamo/nestjs-rate-limit#benchmarks).
 
 #### ● keyPrefix
   <code> Default: 'global'</code>
@@ -524,14 +524,4 @@ customResponseSchema option allows to provide customizable response schemas
 
 ```
 1. Memory     0.34 ms
-2. Redis      2.45 ms
-3. Memcached  3.89 ms
-4. Mongo      4.75 ms
-```
-
-500 concurrent clients with maximum 1000 req per sec during 30 seconds
-
-```
-5. PostgreSQL 7.48 ms (with connection pool max 100)
-6. MySQL     14.59 ms (with connection pool 100)
 ```
