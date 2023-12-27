@@ -59,7 +59,7 @@ You can choose to register the guard globally:
 ```ts
 import { APP_GUARD } from '@nestjs/core'
 import { RateLimitModule } from '@mvmdev/nestjs-rate-limit';
-import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit/dist/rate-limit.guard';
+import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit';
 
 @Module({
     imports: [RateLimitModule],
@@ -80,9 +80,9 @@ You can use the `@RateLimit` decorator to specify the points and duration for ra
 > app.controller.ts
 
 ```ts
-import { RateLimit } from 'nestjs-rate-limiter'
+import { RateLimit } from '@mvmdev/nestjs-rate-limit'
 import { UseGuards } from '@nestjs/common';
-import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit/dist/rate-limit.guard';
+import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit';
 
 @UseGuards(RateLimitGuard)
 @RateLimit({
@@ -100,9 +100,9 @@ async signUp() {
 ### Dynamic Keyprefix
 
 ```ts
-import { RateLimit } from 'nestjs-rate-limiter'
+import { RateLimit } from '@mvmdev/nestjs-rate-limit'
 import { UseGuards } from '@nestjs/common';
-import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit/dist/rate-limit.guard';
+import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit';
 
 @UseGuards(RateLimitGuard)
 @RateLimit({
