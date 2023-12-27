@@ -7,11 +7,11 @@ import { minutes } from '../../src';
 export class AppController {
   @UseGuards(RateLimitGuard)
   @RateLimit({
-    keyPrefix: 'test',
+    keyPrefix: 'asd',
     points: 3,
     pointsConsumed: 1,
     duration: 5,
-    blockDuration: minutes(10),
+    blockDuration: minutes(1),
   })
   @Get()
   getHello(): string {

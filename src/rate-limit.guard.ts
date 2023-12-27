@@ -18,34 +18,24 @@ import { RATE_LIMIT_OPTIONS, RATE_LIMIT_SKIP } from './rate-limit.constants';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { defaultRateLimitOptions } from './rate-limit.options';
+import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
   private rateLimiters: Map<string, RateLimiterAbstract> = new Map();
-  private routeLevelOptions: RateLimitOptionsInterface;
 
   constructor(
     @Inject(RATE_LIMIT_OPTIONS) private options: RateLimitOptionsInterface,
     @Inject('Reflector') private readonly reflector: Reflector,
   ) {}
 
-  async getRateLimiter(
-    options?: RateLimitOptionsInterface,
-  ): Promise<RateLimiterAbstract> {
-    this.options = { ...defaultRateLimitOptions, ...this.options };
-    this.routeLevelOptions = options;
-
-    const limiterOptions: RateLimitOptionsInterface = {
-      ...this.options,
-      ...options,
-    };
-
+  async getRateLimiter(): Promise<RateLimiterAbstract> {
     const libraryArguments: IRateLimiterOptions = {
-      ...limiterOptions,
+      ...this.options,
       keyPrefix:
-        typeof limiterOptions.keyPrefix === 'function'
-          ? limiterOptions.keyPrefix()
-          : limiterOptions.keyPrefix,
+        typeof this.options.keyPrefix === 'function'
+          ? this.options.keyPrefix()
+          : this.options.keyPrefix,
     };
 
     let rateLimiter: RateLimiterAbstract = this.rateLimiters.get(
@@ -54,17 +44,17 @@ export class RateLimitGuard implements CanActivate {
 
     if (libraryArguments.execEvenlyMinDelayMs === undefined) {
       libraryArguments.execEvenlyMinDelayMs =
-        (this.options.duration * 1000) / this.options.points;
+        (libraryArguments.duration * 1000) / libraryArguments.points;
     }
 
     if (!rateLimiter) {
-      switch (this.routeLevelOptions?.type || this.options.type) {
+      switch (this.options.type) {
         case 'Memory':
           rateLimiter = new RateLimiterMemory(libraryArguments);
           break;
         default:
           throw new Error(
-            `invalid "type" option provided to RateLimit. Value was ${limiterOptions.type}`,
+            `invalid "type" option provided to RateLimit. Value was ${this.options.type}`,
           );
       }
 
@@ -73,8 +63,8 @@ export class RateLimitGuard implements CanActivate {
 
     rateLimiter = new RLWrapperBlackAndWhite({
       limiter: rateLimiter,
-      whiteList: this.routeLevelOptions?.whiteList || this.options.whiteList,
-      blackList: this.routeLevelOptions?.blackList || this.options.blackList,
+      whiteList: this.options.whiteList,
+      blackList: this.options.blackList,
       runActionAnyway: false,
     });
 
@@ -97,36 +87,20 @@ export class RateLimitGuard implements CanActivate {
         context.getHandler(),
       );
 
-    let points: number = this.routeLevelOptions?.points || this.options.points;
-    let pointsConsumed: number =
-      this.routeLevelOptions?.pointsConsumed || this.options.pointsConsumed;
-
-    if (reflectedOptions) {
-      if (reflectedOptions.points) {
-        points = reflectedOptions.points;
-      }
-
-      if (reflectedOptions.pointsConsumed) {
-        pointsConsumed = reflectedOptions.pointsConsumed;
-      }
-    }
+    this.options = {
+      ...defaultRateLimitOptions,
+      ...this.options,
+      ...reflectedOptions,
+    };
 
     const request = this.httpHandler(context).req;
     const response = this.httpHandler(context).res;
 
-    const rateLimiter: RateLimiterAbstract = await this.getRateLimiter(
-      reflectedOptions,
-    );
+    const rateLimiter: RateLimiterAbstract = await this.getRateLimiter();
 
     const key: string = this.getTracker(request);
 
-    await this.responseHandler(
-      response,
-      key,
-      rateLimiter,
-      points,
-      pointsConsumed,
-    );
+    await this.responseHandler(response, key, rateLimiter);
 
     return true;
   }
@@ -175,37 +149,51 @@ export class RateLimitGuard implements CanActivate {
     response: any,
     key: any,
     rateLimiter: RateLimiterAbstract,
-    points: number,
-    pointsConsumed: number,
   ) {
     try {
       const rateLimiterResponse: RateLimiterRes = await rateLimiter.consume(
         key,
-        pointsConsumed,
+        this.options.pointsConsumed,
       );
 
-      await this.setResponseHeaders(response, points, rateLimiterResponse);
+      await this.setResponseHeaders(
+        response,
+        this.options.points,
+        rateLimiterResponse,
+      );
     } catch (rateLimiterResponse) {
       response.header(
         'Retry-After',
         Math.ceil(rateLimiterResponse.msBeforeNext / 1000),
       );
 
-      if (
-        typeof this.routeLevelOptions?.customResponseSchema === 'function' ||
-        typeof this.options.customResponseSchema === 'function'
-      ) {
-        const errorBody =
-          this.routeLevelOptions?.customResponseSchema ||
-          this.options.customResponseSchema;
+      if (typeof this.options.customResponseSchema === 'function') {
+        const errorBody = this.options.customResponseSchema;
+
+        if (this.options.for === 'ExpressGraphql') {
+          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+        }
+
+        if (this.options.for === 'FastifyGraphql') {
+          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+        }
+
         throw new HttpException(
           errorBody(rateLimiterResponse),
           HttpStatus.TOO_MANY_REQUESTS,
         );
       }
 
+      if (this.options.for === 'ExpressGraphql') {
+        throw new GraphQLException(this.options.errorMessage, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+      }
+
+      if (this.options.for === 'FastifyGraphql') {
+        throw new GraphQLException(this.options.errorMessage, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+      }
+
       throw new HttpException(
-        this.routeLevelOptions?.errorMessage || this.options.errorMessage,
+        this.options.errorMessage,
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
