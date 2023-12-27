@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { RateLimit } from '../../src/rate-limit.decorator';
-import { RateLimitGuard } from '../../src/rate-limit.guard';
+import { RateLimit } from '../../src';
+import { RateLimitGuard } from '../../src';
 import { minutes } from '../../src';
 
 @Controller()
