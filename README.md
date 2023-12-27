@@ -83,12 +83,14 @@ You can use the `@RateLimit` decorator to specify the points and duration for ra
 import { RateLimit } from '@mvmdev/nestjs-rate-limit'
 import { UseGuards } from '@nestjs/common';
 import { RateLimitGuard } from '@mvmdev/nestjs-rate-limit';
+import { minutes } from '@mvmdev/nestjs-rate-limit';
 
 @UseGuards(RateLimitGuard)
 @RateLimit({
   keyPrefix: 'sign-up',
   points: 1,
   duration: 60,
+  blockDuration: minutes(5),
   errorMessage: 'Accounts cannot be created more than once in per minute'
 })
 @Get('/signup')
