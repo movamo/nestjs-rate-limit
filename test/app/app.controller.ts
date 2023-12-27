@@ -7,7 +7,7 @@ import { minutes } from '../../src';
 export class AppController {
   @UseGuards(RateLimitGuard)
   @RateLimit({
-    keyPrefix: 'asd',
+    keyPrefix: 'hello',
     points: 3,
     pointsConsumed: 1,
     duration: 5,
@@ -16,5 +16,10 @@ export class AppController {
   @Get()
   getHello(): string {
     return 'Hello world';
+  }
+
+  @Get('hello')
+  getWorld(): string {
+    return 'World Hello'
   }
 }

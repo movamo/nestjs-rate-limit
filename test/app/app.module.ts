@@ -8,7 +8,7 @@ import { RateLimitModule } from '../../src';
       for: 'Express',
       type: 'Memory',
       errorMessage: 'tooManyRequests',
-    }),
+    }, true),
   ],
   controllers: [AppController],
 })
