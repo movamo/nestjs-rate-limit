@@ -174,11 +174,25 @@ export class RateLimitGuard implements CanActivate {
         const errorBody = this.options.customResponseSchema;
 
         if (this.options.for === 'ExpressGraphql') {
-          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {
+            extensions: {
+              code: 'TOO_MANY_REQUESTS',
+              http: {
+                status: HttpStatus.TOO_MANY_REQUESTS
+              }
+            }
+          });
         }
 
         if (this.options.for === 'FastifyGraphql') {
-          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+          throw new GraphQLException(errorBody(rateLimiterResponse) as string, {
+            extensions: {
+              code: 'TOO_MANY_REQUESTS',
+              http: {
+                status: HttpStatus.TOO_MANY_REQUESTS
+              }
+            }
+          })
         }
 
         throw new HttpException(
