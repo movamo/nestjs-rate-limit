@@ -27,16 +27,16 @@ export class AppController {
       port: 15130,
       db: 0,
       password: 'aYLKX4LnFkrHsQPvC0pcstu7RNpvrUJM',
-      username: 'default'
+      username: 'default',
     }),
     keyPrefix: 'redis',
     points: 3,
     pointsConsumed: 1,
     duration: 5,
-    blockDuration: minutes(1)
+    blockDuration: minutes(1),
   })
   @Get('redis')
   getWorld(): string {
-    return 'Hello Redis'
+    return 'Hello Redis';
   }
 }

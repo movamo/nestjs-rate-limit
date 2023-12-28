@@ -13,7 +13,7 @@ import {
   RateLimiterMemory,
   RateLimiterRedis,
   RateLimiterRes,
-  RLWrapperBlackAndWhite
+  RLWrapperBlackAndWhite,
 } from 'rate-limiter-flexible';
 import { RateLimitOptionsInterface } from './rate-limit.options.interface';
 import { RATE_LIMIT_OPTIONS, RATE_LIMIT_SKIP } from './rate-limit.constants';
@@ -55,7 +55,9 @@ export class RateLimitGuard implements CanActivate {
           rateLimiter = new RateLimiterMemory(libraryArguments);
           break;
         case 'Redis':
-          rateLimiter = new RateLimiterRedis(libraryArguments as IRateLimiterRedisOptions);
+          rateLimiter = new RateLimiterRedis(
+            libraryArguments as IRateLimiterRedisOptions,
+          );
           break;
         default:
           throw new Error(
@@ -180,7 +182,7 @@ export class RateLimitGuard implements CanActivate {
             extensions: {
               code: 'TOO_MANY_REQUESTS',
               http: {
-                status: HttpStatus.TOO_MANY_REQUESTS
+                status: HttpStatus.TOO_MANY_REQUESTS,
               },
             },
           });
@@ -204,11 +206,21 @@ export class RateLimitGuard implements CanActivate {
       }
 
       if (this.options.for === 'ExpressGraphql') {
-        throw new GraphQLException(this.options.errorMessage, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+        throw new GraphQLException(this.options.errorMessage, {
+          extensions: {
+            code: 'TOO_MANY_REQUESTS',
+            http: { status: HttpStatus.TOO_MANY_REQUESTS },
+          },
+        });
       }
 
       if (this.options.for === 'FastifyGraphql') {
-        throw new GraphQLException(this.options.errorMessage, {extensions: {code: 'TOO_MANY_REQUESTS', http: {status: HttpStatus.TOO_MANY_REQUESTS}}})
+        throw new GraphQLException(this.options.errorMessage, {
+          extensions: {
+            code: 'TOO_MANY_REQUESTS',
+            http: { status: HttpStatus.TOO_MANY_REQUESTS },
+          },
+        });
       }
 
       throw new HttpException(

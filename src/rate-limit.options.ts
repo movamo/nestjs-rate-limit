@@ -28,4 +28,4 @@ export const defaultRateLimitOptions: RateLimitOptionsInterface = {
   errorMessage: 'Rate limit exceeded',
   customResponseSchema: undefined,
   logger: true,
-}
+};

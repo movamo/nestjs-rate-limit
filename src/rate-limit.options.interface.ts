@@ -33,7 +33,9 @@ export interface RateLimitOptionsInterface {
   omitResponseHeaders?: boolean;
   errorMessage?: string;
   logger?: boolean;
-  customResponseSchema?: (rateLimiterResponse: RateLimiterRes) => object | string;
+  customResponseSchema?: (
+    rateLimiterResponse: RateLimiterRes,
+  ) => object | string;
 }
 
 export interface RateLimitOptionsFactory {
