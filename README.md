@@ -126,6 +126,31 @@ async example() {
 }
 ```
 
+### Redis
+
+```ts 
+@UseGuards(RateLimitGuard)
+@RateLimit({
+  type: 'Redis',
+  storeClient: new Redis({
+    host: 'redis-15130.c250.eu-central-1-1.ec2.cloud.redislabs.com',
+    port: 15130,
+    db: 0,
+    password: 'aYLhX4LfFkrHhQPvg0pnstu7RNpvrUJM',
+    username: 'default'
+  }),
+  keyPrefix: 'redis',
+  points: 3,
+  pointsConsumed: 1,
+  duration: 5,
+  blockDuration: minutes(1)
+})
+@Get('hello')
+getWorld(): string {
+  return 'World Hello'
+}
+```
+
 ### Proxies
 
 If your application runs behind a proxy server, check the specific HTTP 
@@ -260,26 +285,19 @@ You can consume more than 1 point per invocation of the rate limiter.
 
 For instance if you have a limit of 100 points per 60 seconds, and pointsConsumed is set to 10, the user will effectively be able to make 10 requests per 60 seconds.
 
-[//]: # (#### ● inMemoryBlockOnConsumed)
+#### ● inMemoryBlockOnConsumed
+  <code> Default: 0</code>
+  <br>
+  <code> Type: number</code>
+  <br>
 
-[//]: # (  <code> Default: 0</code>)
+For Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.
 
-[//]: # (  <br>)
+Can be used against DDoS attacks. In-memory blocking works in current process memory and for consume method only.
 
-[//]: # (  <code> Type: number</code>)
+It blocks a key in memory for msBeforeNext milliseconds from the last consume result, if inMemoryBlockDuration is not set. This helps to avoid extra requests.
 
-[//]: # (  <br>)
-
-[//]: # ()
-[//]: # (For Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.)
-
-[//]: # ()
-[//]: # (Can be used against DDoS attacks. In-memory blocking works in current process memory and for consume method only.)
-
-[//]: # ()
-[//]: # (It blocks a key in memory for msBeforeNext milliseconds from the last consume result, if inMemoryBlockDuration is not set. This helps to avoid extra requests.)
-
-[//]: # (It is not necessary to increment counter on store, if all points are consumed already.)
+It is not necessary to increment counter on store, if all points are consumed already.
 
 #### ● duration
   <code> Default: 1</code>
@@ -299,21 +317,15 @@ Keys never expire, if duration is 0.
 
 If positive number and consumed more than points in current duration, block for blockDuration seconds.
 
-[//]: # (#### ● inMemoryBlockDuration)
+#### ● inMemoryBlockDuration
+  <code> Default: 0</code>
+  <br>
+  <code> Type: number</code>
+  <br>
 
-[//]: # (  <code> Default: 0</code>)
+For Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.
 
-[//]: # (  <br>)
-
-[//]: # (  <code> Type: number</code>)
-
-[//]: # (  <br>)
-
-[//]: # ()
-[//]: # (For Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.)
-
-[//]: # ()
-[//]: # (Block key for inMemoryBlockDuration seconds, if inMemoryBlockOnConsumed or more points are consumed. Set it the same as blockDuration option for distributed application to have consistent result on all processes.)
+Block key for inMemoryBlockDuration seconds, if inMemoryBlockOnConsumed or more points are consumed. Set it the same as blockDuration option for distributed application to have consistent result on all processes.
 
 [//]: # ()
 [//]: # (#### ● queueEnabled)
@@ -345,43 +357,35 @@ If the IP is white listed, consume resolved no matter how many points consumed.
 
 If the IP is black listed, consume rejected anytime. Blacklisted IPs are blocked on code level not in store/memory. Think of it as of requests filter.
 
-[//]: # (#### ● storeClient)
+#### ● storeClient
 
-[//]: # (  <code> Default: undefined</code>)
+  <code> Default: undefined</code>
 
-[//]: # (  <br>)
+  <br>
 
-[//]: # (  <code> Type: any</code>)
+  <code> Type: any</code>
 
-[//]: # (  <br>)
+  <br>
 
-[//]: # ()
-[//]: # (Required for Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.)
 
-[//]: # ()
-[//]: # (Have to be redis, ioredis, memcached, mongodb, pg, mysql2, mysql or any other related pool or connection.)
+Required for Redis, Memcached, MongoDB, MySQL, PostgreSQL, etc.
 
-[//]: # (#### ● insuranceLimiter)
 
-[//]: # (  <code> Default: undefined</code>)
+Have to be redis, ioredis, memcached, mongodb, pg, mysql2, mysql or any other related pool or connection.
 
-[//]: # (  <br>)
+#### ● insuranceLimiter
+  <code> Default: undefined</code>
+  <br>
+  <code> Type: any</code>
+  <br>
 
-[//]: # (  <code> Type: any</code>)
+Default: undefined For Redis, Memcached, MongoDB, MySQL, PostgreSQL.
 
-[//]: # (  <br>)
+Instance of RateLimiterAbstract extended object to store limits, when database comes up with any error.
 
-[//]: # ()
-[//]: # (Default: undefined For Redis, Memcached, MongoDB, MySQL, PostgreSQL.)
+All data from insuranceLimiter is NOT copied to parent limiter, when error gone
 
-[//]: # ()
-[//]: # (Instance of RateLimiterAbstract extended object to store limits, when database comes up with any error.)
-
-[//]: # ()
-[//]: # (All data from insuranceLimiter is NOT copied to parent limiter, when error gone)
-
-[//]: # ()
-[//]: # (Note: insuranceLimiter automatically setup blockDuration and execEvenly to same values as in parent to avoid unexpected behaviour.)
+Note: insuranceLimiter automatically setup blockDuration and execEvenly to same values as in parent to avoid unexpected behaviour.
 
 [//]: # (#### ● storeType)
 
@@ -538,4 +542,5 @@ customResponseSchema option allows to provide customizable response schemas
 
 ```
 1. Memory     0.34 ms
+2. Redis      2.45 ms
 ```

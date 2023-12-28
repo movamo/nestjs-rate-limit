@@ -7,11 +7,11 @@ import {
   Injectable,
 } from '@nestjs/common';
 import {
-  IRateLimiterOptions,
+  IRateLimiterOptions, IRateLimiterRedisOptions, IRateLimiterStoreOptions,
   RateLimiterAbstract,
-  RateLimiterMemory,
+  RateLimiterMemory, RateLimiterRedis,
   RateLimiterRes,
-  RLWrapperBlackAndWhite,
+  RLWrapperBlackAndWhite
 } from 'rate-limiter-flexible';
 import { RateLimitOptionsInterface } from './rate-limit.options.interface';
 import { RATE_LIMIT_OPTIONS, RATE_LIMIT_SKIP } from './rate-limit.constants';
@@ -51,6 +51,9 @@ export class RateLimitGuard implements CanActivate {
       switch (this.options.type) {
         case 'Memory':
           rateLimiter = new RateLimiterMemory(libraryArguments);
+          break;
+        case 'Redis':
+          rateLimiter = new RateLimiterRedis(libraryArguments as IRateLimiterRedisOptions)
           break;
         default:
           throw new Error(
