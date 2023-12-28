@@ -179,8 +179,8 @@ export class RateLimitGuard implements CanActivate {
               code: 'TOO_MANY_REQUESTS',
               http: {
                 status: HttpStatus.TOO_MANY_REQUESTS
-              }
-            }
+              },
+            },
           });
         }
 
@@ -189,10 +189,10 @@ export class RateLimitGuard implements CanActivate {
             extensions: {
               code: 'TOO_MANY_REQUESTS',
               http: {
-                status: HttpStatus.TOO_MANY_REQUESTS
-              }
-            }
-          })
+                status: HttpStatus.TOO_MANY_REQUESTS,
+              },
+            },
+          });
         }
 
         throw new HttpException(
