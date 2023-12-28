@@ -143,6 +143,18 @@ export class RateLimitProxyGuard extends RateLimitGuard {
 }
 ```
 
+### SkipRateLimit
+
+use `@SkipRateLimit` over your method to skip rate limiting.
+
+```ts
+import { SkipRateLimit } from '@mvmdev/nestjs-rate-limit';
+
+@SkipRateLimit()
+async getHello(){
+  return 'Hello world';
+}
+```
 
 ### With All Options
 
