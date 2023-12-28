@@ -1,5 +1,11 @@
 <h2 align="center">Flexible Rate Limiter Module for NestJS</h2>
 
+<p>
+    <a href="https://www.codefactor.io/repository/github/movamo/nestjs-rate-limit"><img src="https://www.codefactor.io/repository/github/movamo/nestjs-rate-limit/badge" alt="CodeFactor" /></a>    
+    <a href="https://www.npmjs.com/package/@mvmdev/nestjs-rate-limit"><img src="https://img.shields.io/npm/v/@mvmdev/nestjs-rate-limit.svg?sanitize=true" alt="NPM Version" /></a>
+    <a href="https://www.npmjs.com/package/@mvmdev/nestjs-rate-limit"><img src="https://img.shields.io/npm/dm/@mvmdev/nestjs-rate-limit.svg?sanitize=true" alt="NPM Downloads" /></a>
+</p>
+
 # Description
 
 `nestjs-rate-limit` is a module which adds in configurable rate limiting for [Nest](https://github.com/nestjs/nest) applications.
